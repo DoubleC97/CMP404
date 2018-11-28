@@ -53,7 +53,8 @@ void ARApp::Init()
 	// Initialise variables
 	marker_amount_ = 5;
 	
-	// Mesh_render variables
+	// Score
+	score = 0;
 	
 	// initialise sony framework
 	sampleInitialize();
@@ -131,7 +132,7 @@ bool ARApp::Update(float frame_time)
 	world_transform_matrix.Scale(scale_vector);
 
 	// Call mesh render update
-	mesh_render_manager_.RenderUpdate(input_manager_);
+	mesh_render_manager_.RenderUpdate(input_manager_, score);
 
 	sampleUpdateEnd(dat);
 

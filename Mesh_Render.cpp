@@ -61,9 +61,6 @@ void Mesh_Render::RenderInit(PrimitiveBuilder* primitive_builder_)
 	projectile_mesh_ = new gef::MeshInstance();
 	projectile_mesh_->set_mesh(primitive_builder_->GetDefaultCubeMesh());
 	
-	// TEST
-	test = new gef::MeshInstance();
-	test->set_mesh(primitive_builder_->GetDefaultCubeMesh());
 
 }
 
@@ -102,7 +99,7 @@ void Mesh_Render::DetectMarker()
 }
 
 // Update()
-void Mesh_Render::RenderUpdate(gef::InputManager* input_manager_)
+void Mesh_Render::RenderUpdate(gef::InputManager* input_manager_, int score)
 {
 	
 
@@ -134,27 +131,26 @@ void Mesh_Render::RenderUpdate(gef::InputManager* input_manager_)
 		collision_manager_.AABBtoAABB(target_mesh_[i], projectile_mesh_);
 
 		// Check if collision has happned
-		if (collision_manager_.is_colliding == true /*&& button pressed == true*/)
+		if (collision_manager_.is_colliding == true && button_pressed_ == true)
 		{
 			// Set button pressed to false
 			button_pressed_ = false;
 			// Restet move projectile
 			move_projectile_ = -0.5;
+			// Add to score
+			score++;
+
 			break;
 		}
 	}
 
-	// TEST
-	//collision_manager_.AABBtoAABB(test, projectile_mesh_);
 
 	// Check if button is pressed
 	if (button_pressed_ == true)
 	{
-		// Add -1 to move projectile
+		// Add -0.05 to move projectile
 		move_projectile_ += -0.05f;
 	}
-
-	
 
 	// Check if projectile has reach furthest distance
 	if (move_projectile_ == -20.5)
@@ -267,6 +263,4 @@ void Mesh_Render::TargetRender(gef::Renderer3D* renderer_3D)
 void Mesh_Render::ProjectileRender(gef::Renderer3D* renderer_3D)
 {
 	renderer_3D->DrawMesh(*projectile_mesh_);
-	// tEST
-	//renderer_3D->DrawMesh(*test);
 }

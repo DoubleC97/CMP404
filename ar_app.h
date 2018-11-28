@@ -81,6 +81,9 @@ private:
 	gef::MeshInstance mirror_cube_[5];
 	gef::MeshInstance beam_mesh_;
 
+	// Score
+	int score;
+
 };
 
 

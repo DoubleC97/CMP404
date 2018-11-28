@@ -36,7 +36,7 @@ public:
 	// Detect Marker
 	void DetectMarker();
 	// Update
-	void RenderUpdate(gef::InputManager* input_manager_);
+	void RenderUpdate(gef::InputManager* input_manager_, int score);
 
 	// Render Target
 	void TargetRender(gef::Renderer3D* renderer_3D);
