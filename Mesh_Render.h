@@ -11,6 +11,7 @@
 #include "primitive_builder.h"
 #include <platform/vita/graphics/texture_vita.h>
 #include <system/application.h>
+#include "Collision.h"
 
 
 // FRAMEWORK FORWARD DECLARATIONS
@@ -32,28 +33,39 @@ public:
 
 	// Initalize 
 	void RenderInit(PrimitiveBuilder* primitive_builder_);
+	// Detect Marker
+	void DetectMarker();
 	// Update
-	void RenderUpdate();
-	// Render Mirrors
-	void MirrorRender(gef::Renderer3D* renderer_3D);
-	// Render Beam
-	void BeamRender(gef::Renderer3D* renderer_3D);
-	// Render Goal
-	void GoalRender();
-	// Render laser
-	void LaserRender();
+	void RenderUpdate(gef::InputManager* input_manager_);
 
-	// Mirror Mesh
-	gef::MeshInstance* mirror_mesh_[4];
-	// Beam Mesh
-	gef::MeshInstance* laser_beam_mesh_[5];
-	// Goal Mesh
-	// Laser Mesh
+	// Render Target
+	void TargetRender(gef::Renderer3D* renderer_3D);
+	// Render Projectile
+	void ProjectileRender(gef::Renderer3D* renderer_3D);
 
-	int mirror_amount_, beam_amount_;
+	// Target mesh
+	gef::MeshInstance* target_mesh_[6];
+	// Projectile mesh
+	gef::MeshInstance* projectile_mesh_;
+
+	// The amount of targets
+	int target_amount_;
+
+	// Has the marker(s) been found
 	float is_found;
-	gef::Matrix44 transform_matrix_; 
 
+	// Transform Matrix
+	gef::Matrix44 transform_matrix_; 
+	// To store all of the markeer transfroms
+	gef::Matrix44 stored_marker_transform_[6];
+	
+	// For moving the projectile
+	float move_projectile_;
+	// Check for button press
+	bool button_pressed_;
+
+	// TEST
+	gef::MeshInstance* test;
 	
 	
 };

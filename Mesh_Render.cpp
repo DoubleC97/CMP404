@@ -13,6 +13,8 @@
 
 #include <sony_sample_framework.h>
 #include "math.h" 
+#include <input\input_manager.h>
+#include <input\sony_controller_input_manager.h>
 
 Mesh_Render::Mesh_Render()
 {
@@ -24,48 +26,52 @@ Mesh_Render::~Mesh_Render()
 {
 }
 
+// Colliusion manger
+Collision collision_manager_;
 
 // Init()
 void Mesh_Render::RenderInit(PrimitiveBuilder* primitive_builder_)
 {
 	
-	// Initulize mirror amount and beam amount
-	mirror_amount_ = 4;
-	beam_amount_ = 5;
+	// Initulize target amount and projectile amount
+	target_amount_ = 6;
+	// Initulize move projectile for firing
+	move_projectile_ = -0.5;
+	// Initulaize button pressed
+	button_pressed_ = false;
+	//
+	// Collision variables
+	collision_manager_.is_colliding = false;
 
 	// Set trsansfor mamtirx to identity
 	transform_matrix_.SetIdentity();
 	//  set scale of transform_matrix
 	transform_matrix_.Scale(gef::Vector4(0.059f, 0.059f, 0.059f));
 
-	// For each mirror
-	for (int i = 0; i < mirror_amount_; i++)
+
+	// For each target
+	for (int i = 0; i < target_amount_; i++)
 	{
-		// Initlize mirror_mesh_ to default cube mesh
-		mirror_mesh_[i] = new gef::MeshInstance();
-		mirror_mesh_[i]->set_mesh(primitive_builder_->GetDefaultCubeMesh());
+		// Initlize target_mesh_ to default cube mesh
+		target_mesh_[i] = new gef::MeshInstance();
+		target_mesh_[i]->set_mesh(primitive_builder_->GetDefaultCubeMesh());
 	}
 
-	// For  each beam
-	for (int i = 0; i < beam_amount_; i++)
-	{
-		// Initlize laser_beam_mesh_ to default cube mesh
-		laser_beam_mesh_[i] = new gef::MeshInstance();
-		laser_beam_mesh_[i]->set_mesh(primitive_builder_->GetDefaultCubeMesh());
-	}
+	// Initlize laser_projectile_mesh_ to default cube mesh
+	projectile_mesh_ = new gef::MeshInstance();
+	projectile_mesh_->set_mesh(primitive_builder_->GetDefaultCubeMesh());
+	
+	// TEST
+	test = new gef::MeshInstance();
+	test->set_mesh(primitive_builder_->GetDefaultCubeMesh());
+
 }
 
-// Update()
-void Mesh_Render::RenderUpdate()
+void Mesh_Render::DetectMarker()
 {
-	// To store all of the markeer transfroms
-	gef::Matrix44 stored_marker_transform_[5];
 
-	// Set is found to false
-	is_found = false;
-
-	// For  each mirror
-	for (int i = 0; i < mirror_amount_; i++)
+	// For  each target
+	for (int i = 0; i < target_amount_; i++)
 	{
 		if (sampleIsMarkerFound(i))
 		{
@@ -77,8 +83,8 @@ void Mesh_Render::RenderUpdate()
 
 			// Set marker transform to  display cube on marker
 			stored_marker_transform_[i] = transform_matrix_ * marker_transform_;
-			// Set mirror mesh transform
-			mirror_mesh_[i]->set_transform(stored_marker_transform_[i]);
+			// Set target mesh transform
+			target_mesh_[i]->set_transform(stored_marker_transform_[i]);
 		}
 		else
 		{
@@ -87,33 +93,101 @@ void Mesh_Render::RenderUpdate()
 			start_position.set_value(100.0f, 100.0f, 100.0f);
 			start_transform_matrix_.SetTranslation(start_position);
 			// Set start posiitons for meshses
-			mirror_mesh_[i]->set_transform(start_transform_matrix_);
-			//laser_beam_mesh_->set_transform(start_transform_matrix_);
+			target_mesh_[i]->set_transform(start_transform_matrix_);
+			//
+			projectile_mesh_->set_transform(start_transform_matrix_);
 		}
-
-
 	}
 
-	// For  each beam
-	for (int i = 0; i < beam_amount_; i++)
+}
+
+// Update()
+void Mesh_Render::RenderUpdate(gef::InputManager* input_manager_)
+{
+	
+
+	// Set is found to false
+	is_found = false;
+
+	// Find mnarkers
+	DetectMarker();
+
+	gef::Matrix44 projectile_transform_matrix_;
+	gef::Vector4 projectile_scale_, projectile_position_;
+	
+	// Set Scale value
+	projectile_scale_.set_value(0.059f, 0.059f, 0.059f);
+	// Set position value
+	projectile_position_.set_value(0.0f, 0.0f, move_projectile_);
+	// Set scale transform
+	projectile_transform_matrix_.Scale(projectile_scale_);
+	// Set translation
+	projectile_transform_matrix_.SetTranslation(projectile_position_);
+	// Set projectile transform
+	projectile_mesh_->set_transform(projectile_transform_matrix_);
+
+
+	// For each target
+	for (int i = 0; i < target_amount_; i++)
 	{
-		// If sample is not found
-		if (!sampleIsMarkerFound)
-		{
-			gef::Matrix44 start_transform_matrix_;
-			gef::Vector4 start_position;
-			start_position.set_value(100.0f, 100.0f, 100.0f);
-			start_transform_matrix_.SetTranslation(start_position);
+		// Calll colliisons
+		collision_manager_.AABBtoAABB(target_mesh_[i], projectile_mesh_);
 
-			laser_beam_mesh_[i]->set_transform(start_transform_matrix_);
+		// Check if collision has happned
+		if (collision_manager_.is_colliding == true /*&& button pressed == true*/)
+		{
+			// Set button pressed to false
+			button_pressed_ = false;
+			// Restet move projectile
+			move_projectile_ = -0.5;
+			break;
 		}
 	}
 
-	// Offset
+	// TEST
+	//collision_manager_.AABBtoAABB(test, projectile_mesh_);
+
+	// Check if button is pressed
+	if (button_pressed_ == true)
+	{
+		// Add -1 to move projectile
+		move_projectile_ += -0.05f;
+	}
+
+	
+
+	// Check if projectile has reach furthest distance
+	if (move_projectile_ == -20.5)
+	{
+		// Set button pressed to false
+		button_pressed_ = false;
+		// Restet move projectile
+		move_projectile_ = -0.5;
+	}
+
+	// read input devices
+	if (input_manager_)
+	{
+		input_manager_->Update();
+
+		// controller input
+		const gef::SonyController* controller_manager = input_manager_->controller_input()->GetController(0);
+		if (controller_manager->buttons_pressed() & gef_SONY_CTRL_CROSS)
+		{
+			// Check if button has already been pressed
+			if (button_pressed_ == false)
+			{
+				// Set button pressed to true
+				button_pressed_ = true;
+			}
+		}
+
+	}
+	/*// Offset
 	gef::Matrix44 offset_matrix_, offset_scale_, offset_rotation_, offset_translation_;
-	// Beam
-	gef::Matrix44  beam_transform_matrix_;
-	gef::Vector4 beam_scale_transfrom_;
+	// projectile
+	gef::Matrix44  projectile_transform_matrix_;
+	gef::Vector4 projectile_scale_transfrom_;
 
 	// Distance
 	float v_distance, h_distance, distance;
@@ -123,7 +197,7 @@ void Mesh_Render::RenderUpdate()
 	gef::Vector4 midpoint[5];
 
 	// For each marker
-	for (int i = 0; i < beam_amount_; i++)
+	for (int i = 0; i < projectile_amount_; i++)
 	{
 		int j;
 
@@ -133,28 +207,24 @@ void Mesh_Render::RenderUpdate()
 		}
 
 		// Calculate the  verticle distance
-		v_distance = stored_marker_transform_[j].GetTranslation().y() - stored_marker_transform_[i].GetTranslation().y();
+		v_distance = local_transform_[j].GetTranslation().y() - local_transform_[i].GetTranslation().y();
 		// Calculate the  horizontal  distance
-		h_distance = stored_marker_transform_[j].GetTranslation().x() - stored_marker_transform_[i].GetTranslation().x();
+		h_distance = local_transform_[j].GetTranslation().x() - local_transform_[i].GetTranslation().x();
 		// Calculate distance
 		distance = sqrt(pow(v_distance, 2) + pow(h_distance, 2));
 		// Calculate the angle
 		angle = atan(h_distance / v_distance);
 
-
-
-
-
 		// Calculate the midpoint
-		midpoint[i] = (stored_marker_transform_[i].GetTranslation() + stored_marker_transform_[j].GetTranslation() / 2);
+		midpoint[i] = (local_transform_[i].GetTranslation() + local_transform_[j].GetTranslation()) / 2;
 
 
 		// Set value
-		beam_scale_transfrom_.set_value(0.059f, distance, 0.059f);
+		projectile_scale_transfrom_.set_value(0.059f, distance, 0.059f);
 		// Set offset scale to identity
 		offset_scale_.SetIdentity();
 		// Set scale offset
-		offset_scale_.Scale(beam_scale_transfrom_);
+		offset_scale_.Scale(projectile_scale_transfrom_);
 
 		// Set offset rotation to identity
 		offset_rotation_.SetIdentity();
@@ -171,57 +241,32 @@ void Mesh_Render::RenderUpdate()
 		// Set offset matrix
 		offset_matrix_ = offset_scale_ * offset_rotation_ * offset_translation_;
 
-		// New arker matrix
-		gef::Matrix44 marker_matrix_;
-		// Set marker mtrix to identity
-		marker_matrix_.SetIdentity();
+		// Set projectile transform to identity
+		projectile_transform_matrix_.SetIdentity();
+		// Set projectile matrix
+		projectile_transform_matrix_ = offset_matrix_ * stored_marker_transform_[0];
 
-		// Set tranlation of marker matrixto the same as stored marker
-		marker_matrix_.SetTranslation(stored_marker_transform_[i].GetTranslation());
-
-
-		// Set beam transform to identity
-		beam_transform_matrix_.SetIdentity();
-		// Set beam matrix
-		beam_transform_matrix_ = offset_matrix_ * marker_matrix_;
-
-		// Set beam transform
-		laser_beam_mesh_[i]->set_transform(beam_transform_matrix_);
-	}
+		// Set projectile transform
+		laser_projectile_mesh_[i]->set_transform(projectile_transform_matrix_);*/
+	//}
 }
 
-// For rendering the mirrors
-void Mesh_Render::MirrorRender(gef::Renderer3D* renderer_3D)
+// For rendering the targets
+void Mesh_Render::TargetRender(gef::Renderer3D* renderer_3D)
 {
-	// For each mirror
-	for (int i = 0; i < mirror_amount_; i++)
+	// For each target
+	for (int i = 0; i < target_amount_; i++)
 	{
-		// Draw mirrors
-		renderer_3D->DrawMesh(*mirror_mesh_[i]);
+		// Draw targets
+		renderer_3D->DrawMesh(*target_mesh_[i]);
 	}
 	
 }
 
-// For rendering the beam
-void Mesh_Render::BeamRender(gef::Renderer3D* renderer_3D)
+// For rendering the projectile
+void Mesh_Render::ProjectileRender(gef::Renderer3D* renderer_3D)
 {
-
-	// For  each beam
-	for (int i = 0; i < beam_amount_; i++)
-	{
-		// Draw beam
-		renderer_3D->DrawMesh(*laser_beam_mesh_[i]);
-	}
-}
-
-// For rendering the laser
-void Mesh_Render::LaserRender()
-{
-
-}
-
-// For rendering the goal
-void Mesh_Render::GoalRender()
-{
-
+	renderer_3D->DrawMesh(*projectile_mesh_);
+	// tEST
+	//renderer_3D->DrawMesh(*test);
 }

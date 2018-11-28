@@ -30,7 +30,6 @@ public:
 	Collision();
 	~Collision();
 
-	void SpheretoSphere(gef::MeshInstance* first_mesh_, gef::MeshInstance* other_mesh_);
 	void AABBtoAABB(gef::MeshInstance* first_mesh_, gef::MeshInstance* other_mesh_);
 
 	gef::Matrix44 other_mesh_transform_matrix;;

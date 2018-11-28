@@ -22,8 +22,7 @@
 using std::pow;
 using std::sqrt;
 
-// Colliusion manger
-Collision collision_manager_;
+
 // Mesh render manager
 Mesh_Render mesh_render_manager_;
 
@@ -53,8 +52,7 @@ void ARApp::Init()
 
 	// Initialise variables
 	marker_amount_ = 5;
-	// Collision variables
-	collision_manager_.is_colliding = false;
+	
 	// Mesh_render variables
 	
 	// initialise sony framework
@@ -133,7 +131,7 @@ bool ARApp::Update(float frame_time)
 	world_transform_matrix.Scale(scale_vector);
 
 	// Call mesh render update
-	mesh_render_manager_.RenderUpdate();
+	mesh_render_manager_.RenderUpdate(input_manager_);
 
 	sampleUpdateEnd(dat);
 
@@ -179,9 +177,9 @@ void ARApp::Render()
 	renderer_3d_->Begin(false);
 
 	// Render mirror
-	mesh_render_manager_.MirrorRender(renderer_3d_);
+	mesh_render_manager_.TargetRender(renderer_3d_);
 	// Render beam
-	mesh_render_manager_.BeamRender(renderer_3d_);
+	mesh_render_manager_.ProjectileRender(renderer_3d_);
 
 	renderer_3d_->End();
 
