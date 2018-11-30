@@ -76,14 +76,20 @@
     <ClCompile Include="..\..\ar_app.cpp" />
     <ClCompile Include="..\..\Collision.cpp" />
     <ClCompile Include="..\..\main_vita.cpp" />
+    <ClCompile Include="..\..\Menu_State.cpp" />
     <ClCompile Include="..\..\Mesh_Render.cpp" />
     <ClCompile Include="..\..\primitive_builder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ar_app.h" />
     <ClInclude Include="..\..\Collision.h" />
+    <ClInclude Include="..\..\Menu_State.h" />
     <ClInclude Include="..\..\Mesh_Render.h" />
     <ClInclude Include="..\..\primitive_builder.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ar_app.rc" />
   </ItemGroup>
   <Import Condition="'$(ConfigurationType)' == 'Makefile' and Exists('$(VCTargetsPath)\Platforms\$(Platform)\SCE.Makefile.$(Platform).targets')" Project="$(VCTargetsPath)\Platforms\$(Platform)\SCE.Makefile.$(Platform).targets" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

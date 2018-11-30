@@ -99,7 +99,7 @@ void Mesh_Render::DetectMarker()
 }
 
 // Update()
-void Mesh_Render::RenderUpdate(gef::InputManager* input_manager_, int score)
+void Mesh_Render::RenderUpdate(gef::InputManager* input_manager_, int& score)
 {
 	
 
@@ -153,7 +153,7 @@ void Mesh_Render::RenderUpdate(gef::InputManager* input_manager_, int score)
 	}
 
 	// Check if projectile has reach furthest distance
-	if (move_projectile_ == -20.5)
+	if (move_projectile_ <= -1.5f)
 	{
 		// Set button pressed to false
 		button_pressed_ = false;

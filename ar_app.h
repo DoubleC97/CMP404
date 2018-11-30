@@ -10,6 +10,7 @@
 #include "primitive_builder.h"
 #include "Collision.h"
 #include "Mesh_Render.h"
+#include "Menu_State.h"
 
 // Vita AR includes
 #include <camera.h>
@@ -83,6 +84,17 @@ private:
 
 	// Score
 	int score;
+
+	enum Game_State
+	{
+		MENU,
+		GAME,
+		EXIT
+	};
+
+	Game_State game_state;
+	// Game has started
+	bool start_game_;
 
 };
 

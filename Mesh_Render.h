@@ -10,7 +10,6 @@
 #include <graphics/mesh_instance.h>
 #include "primitive_builder.h"
 #include <platform/vita/graphics/texture_vita.h>
-#include <system/application.h>
 #include "Collision.h"
 
 
@@ -36,7 +35,7 @@ public:
 	// Detect Marker
 	void DetectMarker();
 	// Update
-	void RenderUpdate(gef::InputManager* input_manager_, int score);
+	void RenderUpdate(gef::InputManager* input_manager_, int& score);
 
 	// Render Target
 	void TargetRender(gef::Renderer3D* renderer_3D);
