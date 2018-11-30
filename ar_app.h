@@ -11,6 +11,7 @@
 #include "Collision.h"
 #include "Mesh_Render.h"
 #include "Menu_State.h"
+#include "Game_State_.h"
 
 // Vita AR includes
 #include <camera.h>
@@ -55,7 +56,7 @@ private:
 	gef::Font* font_;
 
 	// Varibales for AR projection and mesh
-	gef::Matrix44 ortho_projection_matrix;
+	/*gef::Matrix44 ortho_projection_matrix;
 	gef::Matrix44 projection_matrix;
 	gef::Matrix44 view_matrix;
 	gef::Sprite draw_camera_feed_;
@@ -70,17 +71,16 @@ private:
 	float fps_;
 	float camera_image_aspect_ratio_;
 	float display_aspect_ratio_; 
-	float virticle_image_scale_factor_;
+	float virticle_image_scale_factor_;*/
 
 	class gef::Renderer3D* renderer_3d_;
 	PrimitiveBuilder* primitive_builder_;
+
+	float fps_;
 	
-	bool is_found;
+	/*bool is_found;
 	float marker_amount_;
 ;
-	// Temp untilrender class is working
-	gef::MeshInstance mirror_cube_[5];
-	gef::MeshInstance beam_mesh_;
 
 	// Score
 	int score;
@@ -94,7 +94,7 @@ private:
 
 	Game_State game_state;
 	// Game has started
-	bool start_game_;
+	bool start_game_;*/
 
 };
 

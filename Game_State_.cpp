@@ -1,4 +1,4 @@
-#include "ar_app.h"
+#include "Game_State_.h"
 #include <system/platform.h>
 #include <graphics/sprite_renderer.h>
 #include <graphics/texture.h>
@@ -16,54 +16,35 @@
 #include <sony_sample_framework.h>
 #include <sony_tracking.h>
 
-// Math
-#include <math.h>
-
-using std::pow;
-using std::sqrt;
-
-
+// Menu state manager
+Menu_State menu_state_manager_;
 // Mesh render manager
-//Mesh_Render mesh_render_manager_;
-// Menu manager
-//Menu_State menu_state_manager_;
+Mesh_Render mesh_render_manager_;
 
-//
-Game_State_ game_state_manager;
-
-ARApp::ARApp(gef::Platform& platform) :
-	Application(platform),
-	input_manager_(NULL),
-	sprite_renderer_(NULL),
-	font_(NULL),
-	renderer_3d_(NULL),
-	primitive_builder_(NULL)
+Game_State_::Game_State_()
 {
 }
 
-void ARApp::Init()
+
+Game_State_::~Game_State_()
 {
-	input_manager_ = gef::InputManager::Create(platform_);
-	sprite_renderer_ = gef::SpriteRenderer::Create(platform_);
-	renderer_3d_ = gef::Renderer3D::Create(platform_);
-	primitive_builder_ = new PrimitiveBuilder(platform_);
+}
 
-	InitFont();
-	SetupLights();
+void Game_State_::GameInit(PrimitiveBuilder* primitive_builder_)
+{
+	
+	// Start Game
+	start_game_ = false;
 
-	game_state_manager.GameInit(primitive_builder_);
+	// Game State menu
+	game_state = MENU;
 
-	// Game state
-	//game_state = MENU;
-
-	/*if (game_state == MENU)
+	if (game_state == MENU)
 	{
 		// Init menu
 		menu_state_manager_.MenuInit(start_game_);
 
 	}
-
-
 
 	// Set trsansfor mamtirx to identity
 	transform_matrix.SetIdentity();
@@ -109,42 +90,14 @@ void ARApp::Init()
 	AppData* dat = sampleUpdateBegin();
 	smartTrackingReset();
 	sampleUpdateEnd(dat);
-}*/
 }
 
-void ARApp::CleanUp()
+void Game_State_::GameUpdate(gef::InputManager* input_manager_)
 {
-	delete primitive_builder_;
-	primitive_builder_ = NULL;
-
-	smartRelease();
-	sampleRelease();
-
-	CleanUpFont();
-	delete sprite_renderer_;
-	sprite_renderer_ = NULL;
-
-	delete renderer_3d_;
-	renderer_3d_ = NULL;
-
-	delete input_manager_;
-	input_manager_ = NULL;
-
-}
-
-bool ARApp::Update(float frame_time)
-{
-
 	
-	fps_ = 1.0f / frame_time;
+	AppData* dat = sampleUpdateBegin();
 
-	input_manager_->Update();
-
-	//AppData* dat = sampleUpdateBegin();
-
-	game_state_manager.GameUpdate(input_manager_);
-
-	/*if (start_game_ == true)
+	if (start_game_ == true)
 	{
 		game_state = GAME;
 	}
@@ -152,7 +105,7 @@ bool ARApp::Update(float frame_time)
 	if (game_state == MENU)
 	{
 		//
-		//menu_state_manager_.MenuUpdate(input_manager_, start_game_);
+		menu_state_manager_.MenuUpdate(input_manager_, start_game_);
 	}
 
 
@@ -171,21 +124,16 @@ bool ARApp::Update(float frame_time)
 		world_transform_matrix.Scale(scale_vector);
 
 		// Call mesh render update
-		//mesh_render_manager_.RenderUpdate(input_manager_, score);
+		mesh_render_manager_.RenderUpdate(input_manager_, score);
 
-	}*/
+	}
 
-	//sampleUpdateEnd(dat);
-
-	return true;
+	sampleUpdateEnd(dat);
 }
 
-void ARApp::Render()
+void Game_State_::GameRender(gef::Renderer3D* renderer_3D_, gef::SpriteRenderer* sprite_renderer_, gef::Platform& platform_, gef::Font* font_)
 {
-	
-	game_state_manager.GameRender(renderer_3d_, sprite_renderer_, platform_, font_);
-
-	/*AppData* dat = sampleRenderBegin();
+	AppData* dat = sampleRenderBegin();
 	if (game_state == GAME)
 	{
 		sprite_renderer_->Begin(true);
@@ -215,64 +163,53 @@ void ARApp::Render()
 		// Scale the projection matrix
 		projection_matrix = projection_matrix * scale_matrix;
 		// Projectionmatrix
-		renderer_3d_->set_projection_matrix(projection_matrix);
+		renderer_3D_->set_projection_matrix(projection_matrix);
 		// Veiw matrix
-		renderer_3d_->set_view_matrix(view_matrix);
+		renderer_3D_->set_view_matrix(view_matrix);
 
 		// Begin rendering 3D meshes, don't clear the frame buffer
-		renderer_3d_->Begin(false);
+		renderer_3D_->Begin(false);
 
-		// Render mirror
-		//mesh_render_manager_.TargetRender(renderer_3d_);
-		// Render beam
-		//mesh_render_manager_.ProjectileRender(renderer_3d_);
+		// Render target
+		mesh_render_manager_.TargetRender(renderer_3D_);
+		// Render projectile
+		mesh_render_manager_.ProjectileRender(renderer_3D_);
 
-		renderer_3d_->End();
+		renderer_3D_->End();
 
-		RenderOverlay();
+		RenderOverlay(sprite_renderer_,  &platform_, font_);
 
 		sampleRenderEnd();
-	}*/
+	}
 }
 
 
-void ARApp::RenderOverlay()
+
+void Game_State_::RenderOverlay(gef::SpriteRenderer* sprite_renderer_, gef::Platform* platform_, gef::Font* font_)
 {
 	//
 	// render 2d hud on top
 	//
-	/*gef::Matrix44 proj_matrix2d;
+	gef::Matrix44 proj_matrix2d;
 
-	proj_matrix2d = platform_.OrthographicFrustum(0.0f, platform_.width(), 0.0f, platform_.height(), -1.0f, 1.0f);
+	proj_matrix2d = platform_->OrthographicFrustum(0.0f, platform_->width(), 0.0f, platform_->height(), -1.0f, 1.0f);
 	sprite_renderer_->set_projection_matrix(proj_matrix2d);
 	sprite_renderer_->Begin(false);
-	DrawHUD();
-	sprite_renderer_->End();*/
-
-	game_state_manager.RenderOverlay(sprite_renderer_, &platform_, font_);
+	DrawHUD(sprite_renderer_, font_);
+	sprite_renderer_->End();
 }
 
-
-void ARApp::InitFont()
+void Game_State_::GameInitFont(gef::Font* font_, gef::Platform& platform_)
 {
-
-	game_state_manager.GameInitFont(font_, platform_);
-	/*font_ = new gef::Font(platform_);
-	font_->Load("comic_sans");*/
+	font_ = new gef::Font(platform_);
+	font_->Load("comic_sans");
 }
 
-void ARApp::CleanUpFont()
+void Game_State_::DrawHUD(gef::SpriteRenderer* sprite_renderer_, gef::Font* font_)
 {
-	delete font_;
-	font_ = NULL;
-}
-
-void ARApp::DrawHUD()
-{
-	
-	/*if(font_)
+	if (font_)
 	{
-		font_->RenderText(sprite_renderer_, gef::Vector4(850.0f, 510.0f, -0.9f), 1.0f, 0xffffffff, gef::TJ_LEFT, "FPS: %.1f", fps_);
+		//font_->RenderText(sprite_renderer_, gef::Vector4(850.0f, 510.0f, -0.9f), 1.0f, 0xffffffff, gef::TJ_LEFT, "FPS: %.1f", fps_);
 		// If foud display marker is found
 		if (is_found)
 		{
@@ -284,18 +221,5 @@ void ARApp::DrawHUD()
 		}
 
 		font_->RenderText(sprite_renderer_, gef::Vector4(850.0f, 110.0f, -0.9f), 1.0f, 0xffffffff, gef::TJ_LEFT, "Score: %i", score);
-	}*/
-
-	game_state_manager.DrawHUD(sprite_renderer_, font_);
-}
-
-void ARApp::SetupLights()
-{
-	gef::PointLight default_point_light;
-	default_point_light.set_colour(gef::Colour(0.7f, 0.7f, 1.0f, 1.0f));
-	default_point_light.set_position(gef::Vector4(-300.0f, -500.0f, 100.0f));
-
-	gef::Default3DShaderData& default_shader_data = renderer_3d_->default_shader_data();
-	default_shader_data.set_ambient_light_colour(gef::Colour(0.5f, 0.5f, 0.5f, 1.0f));
-	default_shader_data.AddPointLight(default_point_light);
+	}
 }
