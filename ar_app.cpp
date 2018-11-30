@@ -256,9 +256,9 @@ void ARApp::RenderOverlay()
 void ARApp::InitFont()
 {
 
-	game_state_manager.GameInitFont(font_, platform_);
-	/*font_ = new gef::Font(platform_);
-	font_->Load("comic_sans");*/
+	//game_state_manager.GameInitFont(font_, platform_);
+	font_ = new gef::Font(platform_);
+	font_->Load("comic_sans");
 }
 
 void ARApp::CleanUpFont()

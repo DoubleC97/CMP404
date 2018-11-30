@@ -199,11 +199,11 @@ void Game_State_::RenderOverlay(gef::SpriteRenderer* sprite_renderer_, gef::Plat
 	sprite_renderer_->End();
 }
 
-void Game_State_::GameInitFont(gef::Font* font_, gef::Platform& platform_)
+/*void Game_State_::GameInitFont(gef::Font* font_, gef::Platform& platform_)
 {
 	font_ = new gef::Font(platform_);
 	font_->Load("comic_sans");
-}
+}*/
 
 void Game_State_::DrawHUD(gef::SpriteRenderer* sprite_renderer_, gef::Font* font_)
 {
