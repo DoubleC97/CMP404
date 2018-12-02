@@ -41,7 +41,7 @@ void Menu_State::MenuUpdate(gef::InputManager* input_manager_, bool& start_game_
 		if (controller_manager->buttons_pressed() & gef_SONY_CTRL_SELECT)
 		{
 			// Exit applicaiotn
-			//exit(0); 
+			exit(0); 
 		}
 
 	}

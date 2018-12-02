@@ -88,8 +88,6 @@ bool ARApp::Update(float frame_time)
 	// Call to game update
 	game_state_manager.GameUpdate(input_manager_, timer);
 
-	
-
 	return true;
 }
 

@@ -135,7 +135,7 @@ void Game_State_::GameUpdate(gef::InputManager* input_manager_, float& timer)
 		scale_matrix.Scale(projection_scale);
 		// Set world matrix to identity
 		world_transform_matrix.SetIdentity();
-		// Set scale of worl matrix
+		// Set scale of world matrix
 		world_transform_matrix.Scale(scale_vector);
 
 		// Call mesh render update
@@ -176,7 +176,7 @@ void Game_State_::GameUpdate(gef::InputManager* input_manager_, float& timer)
 			if (controller_manager->buttons_pressed() & gef_SONY_CTRL_SELECT)
 			{
 				// Exit applicaiotn
-				//exit(0); 
+				exit(0); 
 			}
 
 		}
