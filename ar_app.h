@@ -59,6 +59,8 @@ private:
 	PrimitiveBuilder* primitive_builder_;
 
 	float fps_;
+	// Timer
+	float timer;
 
 };
 

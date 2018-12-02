@@ -9,6 +9,7 @@
 #include <input\sony_controller_input_manager.h>
 #include "primitive_builder.h"
 #include <graphics/sprite.h>
+#include <system/platform.h>
 #include "Menu_State.h"
 #include "Mesh_Render.h"
 
@@ -47,12 +48,15 @@ public:
 	~Game_State_();
 
 	void GameInit(PrimitiveBuilder* primitive_builder_, gef::Platform* platform_);
-	void GameUpdate(gef::InputManager* input_manager_);
-	void GameRender(gef::Renderer3D* renderer_3, gef::SpriteRenderer* sprite_renderer_, gef::Platform& platform_, gef::Font* font_);
-	void RenderOverlay(gef::SpriteRenderer* sprite_renderer_, gef::Platform* platform_, gef::Font* font_);
-	void DrawHUD(gef::SpriteRenderer* sprite_renderer_, gef::Font* font_);
+	void GameUpdate(gef::InputManager* input_manager_, float& timer);
+	void GameRender(gef::Renderer3D* renderer_3, gef::SpriteRenderer* sprite_renderer_, gef::Platform& platform_, gef::Font* font_, float fps_, float& timer);
+	void RenderOverlay(gef::SpriteRenderer* sprite_renderer_, gef::Platform* platform_, gef::Font* font_, float fps_, float& timer);
+	void DrawHUD(gef::SpriteRenderer* sprite_renderer_, gef::Font* font_, float fps_, float& timer);
 
+	// Game has started
+	bool start_game_;
 
+private:
 	
 	// Varibales for AR projection and mesh
 	gef::Matrix44 ortho_projection_matrix;
@@ -74,8 +78,6 @@ public:
 
 	// Has the marker been found
 	bool is_found;
-	// Game has started
-	bool start_game_;
 	// amount of markers
 	float marker_amount_;
 	// Score
@@ -86,11 +88,16 @@ public:
 	{
 		MENU,
 		GAME,
-		EXIT
+		WIN
 	};
 
 	// Game state
 	Game_State game_state;
+
+	// Win screen PNG
+	gef::Texture* CreateTexturefromPNG(const char* PNG_file, gef::Platform& platform_);
+	gef::Texture* win_texture_;
+	gef::Sprite win_sprite_;
 
 
 	

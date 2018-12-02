@@ -14,6 +14,7 @@
 #include <graphics/image_data.h>
 #include <system/platform.h>
 
+
 // FRAMEWORK FORWARD DECLARATIONS
 namespace gef
 {

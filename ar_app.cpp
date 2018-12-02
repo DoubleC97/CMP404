@@ -45,6 +45,9 @@ void ARApp::Init()
 
 	// Call game sttae init
 	game_state_manager.GameInit(primitive_builder_, &platform_);
+
+	// Set timer to 60.0f;
+	timer = 30.0f;
 }
 
 void ARApp::CleanUp()
@@ -75,8 +78,15 @@ bool ARApp::Update(float frame_time)
 
 	input_manager_->Update();
 
+	// Chck if game has started
+	if (game_state_manager.start_game_ == true)
+	{
+		// Remove time
+		timer -= frame_time;
+	}
+
 	// Call to game update
-	game_state_manager.GameUpdate(input_manager_);
+	game_state_manager.GameUpdate(input_manager_, timer);
 
 	
 
@@ -96,7 +106,7 @@ void ARApp::Render()
 	if (game_state_manager.start_game_ == true)
 	{
 		// Call to game render
-		game_state_manager.GameRender(renderer_3d_, sprite_renderer_, platform_, font_);
+		game_state_manager.GameRender(renderer_3d_, sprite_renderer_, platform_, font_, fps_, timer);
 	}
 
 }
@@ -105,7 +115,7 @@ void ARApp::Render()
 void ARApp::RenderOverlay()
 {
 	// Call to render overlay
-	game_state_manager.RenderOverlay(sprite_renderer_, &platform_, font_);
+	game_state_manager.RenderOverlay(sprite_renderer_, &platform_, font_, fps_, timer);
 }
 
 
@@ -124,7 +134,7 @@ void ARApp::CleanUpFont()
 void ARApp::DrawHUD()
 {
 	// Call to draw HUD
-	game_state_manager.DrawHUD(sprite_renderer_, font_);
+	game_state_manager.DrawHUD(sprite_renderer_, font_, fps_, timer);
 }
 
 void ARApp::SetupLights()
