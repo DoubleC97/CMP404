@@ -55,46 +55,10 @@ private:
 	gef::SpriteRenderer* sprite_renderer_;
 	gef::Font* font_;
 
-	// Varibales for AR projection and mesh
-	/*gef::Matrix44 ortho_projection_matrix;
-	gef::Matrix44 projection_matrix;
-	gef::Matrix44 view_matrix;
-	gef::Sprite draw_camera_feed_;
-	gef::TextureVita camera_texture_map_; 
-	// Matrixs and vectors for AR scale
-	gef::Matrix44 transform_matrix;
-	gef::Vector4 scale_vector;
-	gef::Matrix44 world_transform_matrix;
-	gef::Matrix44 scale_matrix;
-	gef::Vector4 projection_scale;
-
-	float fps_;
-	float camera_image_aspect_ratio_;
-	float display_aspect_ratio_; 
-	float virticle_image_scale_factor_;*/
-
 	class gef::Renderer3D* renderer_3d_;
 	PrimitiveBuilder* primitive_builder_;
 
 	float fps_;
-	
-	/*bool is_found;
-	float marker_amount_;
-;
-
-	// Score
-	int score;
-
-	enum Game_State
-	{
-		MENU,
-		GAME,
-		EXIT
-	};
-
-	Game_State game_state;
-	// Game has started
-	bool start_game_;*/
 
 };
 

@@ -7,7 +7,6 @@
 #include <sony_sample_framework.h>
 #include <input\input_manager.h>
 #include <input\sony_controller_input_manager.h>
-#include <graphics/sprite.h>
 #include "primitive_builder.h"
 #include <graphics/sprite.h>
 #include "Menu_State.h"
@@ -35,6 +34,7 @@ namespace gef
 	class Font;
 	class Renderer3D;
 	class Mesh;
+	class Scene;
 	class RenderTarget;
 	class TextureVita;
 	class InputManager;
@@ -46,13 +46,14 @@ public:
 	Game_State_();
 	~Game_State_();
 
-	void GameInit(PrimitiveBuilder* primitive_builder_);
+	void GameInit(PrimitiveBuilder* primitive_builder_, gef::Platform* platform_);
 	void GameUpdate(gef::InputManager* input_manager_);
 	void GameRender(gef::Renderer3D* renderer_3, gef::SpriteRenderer* sprite_renderer_, gef::Platform& platform_, gef::Font* font_);
 	void RenderOverlay(gef::SpriteRenderer* sprite_renderer_, gef::Platform* platform_, gef::Font* font_);
-	void GameInitFont(gef::Font* font_, gef::Platform& platform_);
 	void DrawHUD(gef::SpriteRenderer* sprite_renderer_, gef::Font* font_);
 
+
+	
 	// Varibales for AR projection and mesh
 	gef::Matrix44 ortho_projection_matrix;
 	gef::Matrix44 projection_matrix;
@@ -90,6 +91,10 @@ public:
 
 	// Game state
 	Game_State game_state;
+
+
+	
+
 	
 }; 
 #endif

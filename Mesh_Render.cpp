@@ -30,7 +30,7 @@ Mesh_Render::~Mesh_Render()
 Collision collision_manager_;
 
 // Init()
-void Mesh_Render::RenderInit(PrimitiveBuilder* primitive_builder_)
+void Mesh_Render::RenderInit(PrimitiveBuilder* primitive_builder_, gef::Platform* platform_)
 {
 	
 	// Initulize target amount and projectile amount
@@ -48,13 +48,21 @@ void Mesh_Render::RenderInit(PrimitiveBuilder* primitive_builder_)
 	//  set scale of transform_matrix
 	transform_matrix_.Scale(gef::Vector4(0.059f, 0.059f, 0.059f));
 
+	// Target scene initulize
+	target_scene_ = new gef::Scene();
+
+	// Load in target sceneform file
+	target_scene_->ReadSceneFromFile(*platform_, "target.scn");
+
+	// Get mesh
+	target_mesh_model = GetMesh(target_scene_, platform_);
 
 	// For each target
 	for (int i = 0; i < target_amount_; i++)
 	{
-		// Initlize target_mesh_ to default cube mesh
+		// Initlize target_mesh_ to target mesh modle
 		target_mesh_[i] = new gef::MeshInstance();
-		target_mesh_[i]->set_mesh(primitive_builder_->GetDefaultCubeMesh());
+		target_mesh_[i]->set_mesh(target_mesh_model);
 	}
 
 	// Initlize laser_projectile_mesh_ to default cube mesh
@@ -85,13 +93,14 @@ void Mesh_Render::DetectMarker()
 		}
 		else
 		{
+			// Set up start position for meshes so they are off screen when markers havent been found
 			gef::Matrix44 start_transform_matrix_;
 			gef::Vector4 start_position;
 			start_position.set_value(100.0f, 100.0f, 100.0f);
 			start_transform_matrix_.SetTranslation(start_position);
-			// Set start posiitons for meshses
+			// Set start posiitons for targets
 			target_mesh_[i]->set_transform(start_transform_matrix_);
-			//
+			// Set start position for projectile
 			projectile_mesh_->set_transform(start_transform_matrix_);
 		}
 	}
@@ -102,7 +111,6 @@ void Mesh_Render::DetectMarker()
 void Mesh_Render::RenderUpdate(gef::InputManager* input_manager_, int& score)
 {
 	
-
 	// Set is found to false
 	is_found = false;
 
@@ -179,72 +187,6 @@ void Mesh_Render::RenderUpdate(gef::InputManager* input_manager_, int& score)
 		}
 
 	}
-	/*// Offset
-	gef::Matrix44 offset_matrix_, offset_scale_, offset_rotation_, offset_translation_;
-	// projectile
-	gef::Matrix44  projectile_transform_matrix_;
-	gef::Vector4 projectile_scale_transfrom_;
-
-	// Distance
-	float v_distance, h_distance, distance;
-	// Angle
-	float angle;
-	// Midpoint
-	gef::Vector4 midpoint[5];
-
-	// For each marker
-	for (int i = 0; i < projectile_amount_; i++)
-	{
-		int j;
-
-		if (i < 5)
-		{
-			j = i + 1;
-		}
-
-		// Calculate the  verticle distance
-		v_distance = local_transform_[j].GetTranslation().y() - local_transform_[i].GetTranslation().y();
-		// Calculate the  horizontal  distance
-		h_distance = local_transform_[j].GetTranslation().x() - local_transform_[i].GetTranslation().x();
-		// Calculate distance
-		distance = sqrt(pow(v_distance, 2) + pow(h_distance, 2));
-		// Calculate the angle
-		angle = atan(h_distance / v_distance);
-
-		// Calculate the midpoint
-		midpoint[i] = (local_transform_[i].GetTranslation() + local_transform_[j].GetTranslation()) / 2;
-
-
-		// Set value
-		projectile_scale_transfrom_.set_value(0.059f, distance, 0.059f);
-		// Set offset scale to identity
-		offset_scale_.SetIdentity();
-		// Set scale offset
-		offset_scale_.Scale(projectile_scale_transfrom_);
-
-		// Set offset rotation to identity
-		offset_rotation_.SetIdentity();
-		// Set offset roation
-		offset_rotation_.RotationZ(-angle);
-
-		// Set translation to identity
-		offset_translation_.SetIdentity();
-		// Set offset translation
-		offset_translation_.SetTranslation(midpoint[i]);
-
-		// Set offst matrix to identity
-		offset_matrix_.SetIdentity();
-		// Set offset matrix
-		offset_matrix_ = offset_scale_ * offset_rotation_ * offset_translation_;
-
-		// Set projectile transform to identity
-		projectile_transform_matrix_.SetIdentity();
-		// Set projectile matrix
-		projectile_transform_matrix_ = offset_matrix_ * stored_marker_transform_[0];
-
-		// Set projectile transform
-		laser_projectile_mesh_[i]->set_transform(projectile_transform_matrix_);*/
-	//}
 }
 
 // For rendering the targets
@@ -262,5 +204,27 @@ void Mesh_Render::TargetRender(gef::Renderer3D* renderer_3D)
 // For rendering the projectile
 void Mesh_Render::ProjectileRender(gef::Renderer3D* renderer_3D)
 {
+	// Render projectile
 	renderer_3D->DrawMesh(*projectile_mesh_);
 }
+
+
+gef::Mesh* Mesh_Render::GetMesh(gef::Scene* scene, gef::Platform* platform_)
+{
+	gef::Mesh* mesh_ = NULL;
+
+	// If scene
+	if (scene)
+	{
+		// Check if ther eis scene data
+		if (scene->mesh_data.size() > 0)
+		{
+			// Create a mesh from data
+			mesh_ = scene->CreateMesh(*platform_, scene->mesh_data.front());
+		}
+	}
+
+	// Return mesh
+	return mesh_;
+}
+

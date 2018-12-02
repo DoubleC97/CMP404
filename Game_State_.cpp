@@ -30,7 +30,7 @@ Game_State_::~Game_State_()
 {
 }
 
-void Game_State_::GameInit(PrimitiveBuilder* primitive_builder_)
+void Game_State_::GameInit(PrimitiveBuilder* primitive_builder_, gef::Platform* platform_)
 {
 	
 	// Start Game
@@ -42,7 +42,7 @@ void Game_State_::GameInit(PrimitiveBuilder* primitive_builder_)
 	if (game_state == MENU)
 	{
 		// Init menu
-		menu_state_manager_.MenuInit(start_game_);
+		menu_state_manager_.MenuInit(start_game_, platform_);
 
 	}
 
@@ -51,10 +51,10 @@ void Game_State_::GameInit(PrimitiveBuilder* primitive_builder_)
 	//  set scale of transform_matrix
 	transform_matrix.Scale(gef::Vector4(0.059f, 0.059f, 0.059f));
 
-	// Initialise variables
-	marker_amount_ = 5;
+	// Set marker amount 6
+	marker_amount_ = 6;
 
-	// Score
+	// Set score to 0
 	score = 0;
 
 	// initialise sony framework
@@ -84,7 +84,7 @@ void Game_State_::GameInit(PrimitiveBuilder* primitive_builder_)
 	projection_scale.set_value(1, virticle_image_scale_factor_, 1);
 
 	// Initulize mesh renderer
-	mesh_render_manager_.RenderInit(primitive_builder_);
+	mesh_render_manager_.RenderInit(primitive_builder_, platform_);
 
 	// reset marker tracking
 	AppData* dat = sampleUpdateBegin();
@@ -97,18 +97,20 @@ void Game_State_::GameUpdate(gef::InputManager* input_manager_)
 	
 	AppData* dat = sampleUpdateBegin();
 
+	// Check if game has started
 	if (start_game_ == true)
 	{
+		// Change state to gme
 		game_state = GAME;
 	}
-
+	// Check if state is menu
 	if (game_state == MENU)
 	{
-		//
+		// Call menu update
 		menu_state_manager_.MenuUpdate(input_manager_, start_game_);
 	}
 
-
+	// Check if state is game
 	if (game_state == GAME)
 	{
 		// use the tracking library to try and find markers
@@ -125,7 +127,6 @@ void Game_State_::GameUpdate(gef::InputManager* input_manager_)
 
 		// Call mesh render update
 		mesh_render_manager_.RenderUpdate(input_manager_, score);
-
 	}
 
 	sampleUpdateEnd(dat);
@@ -174,9 +175,10 @@ void Game_State_::GameRender(gef::Renderer3D* renderer_3D_, gef::SpriteRenderer*
 		mesh_render_manager_.TargetRender(renderer_3D_);
 		// Render projectile
 		mesh_render_manager_.ProjectileRender(renderer_3D_);
-
+		// End render 3D
 		renderer_3D_->End();
 
+		// Render overlay
 		RenderOverlay(sprite_renderer_,  &platform_, font_);
 
 		sampleRenderEnd();
@@ -199,11 +201,6 @@ void Game_State_::RenderOverlay(gef::SpriteRenderer* sprite_renderer_, gef::Plat
 	sprite_renderer_->End();
 }
 
-/*void Game_State_::GameInitFont(gef::Font* font_, gef::Platform& platform_)
-{
-	font_ = new gef::Font(platform_);
-	font_->Load("comic_sans");
-}*/
 
 void Game_State_::DrawHUD(gef::SpriteRenderer* sprite_renderer_, gef::Font* font_)
 {
@@ -223,3 +220,4 @@ void Game_State_::DrawHUD(gef::SpriteRenderer* sprite_renderer_, gef::Font* font
 		font_->RenderText(sprite_renderer_, gef::Vector4(850.0f, 110.0f, -0.9f), 1.0f, 0xffffffff, gef::TJ_LEFT, "Score: %i", score);
 	}
 }
+

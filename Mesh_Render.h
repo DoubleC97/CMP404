@@ -10,6 +10,8 @@
 #include <graphics/mesh_instance.h>
 #include "primitive_builder.h"
 #include <platform/vita/graphics/texture_vita.h>
+#include <graphics\mesh.h>
+#include <graphics\scene.h>
 #include "Collision.h"
 
 
@@ -21,6 +23,7 @@ namespace gef
 	class Font;
 	class Renderer3D;
 	class Mesh;
+	class Scene;
 	class InputManager;
 }
 
@@ -31,7 +34,7 @@ public:
 	~Mesh_Render();
 
 	// Initalize 
-	void RenderInit(PrimitiveBuilder* primitive_builder_);
+	void RenderInit(PrimitiveBuilder* primitive_builder_, gef::Platform* platform_);
 	// Detect Marker
 	void DetectMarker();
 	// Update
@@ -42,10 +45,18 @@ public:
 	// Render Projectile
 	void ProjectileRender(gef::Renderer3D* renderer_3D);
 
+	gef::Mesh* GetMesh(gef::Scene* scene, gef::Platform* platform_);
+
 	// Target mesh
 	gef::MeshInstance* target_mesh_[6];
 	// Projectile mesh
 	gef::MeshInstance* projectile_mesh_;
+
+	// Scene for model loading
+	gef::Scene* target_scene_;
+	// 
+	gef::Mesh* target_mesh_model;
+
 
 	// The amount of targets
 	int target_amount_;
@@ -63,8 +74,8 @@ public:
 	// Check for button press
 	bool button_pressed_;
 
-	// TEST
-	gef::MeshInstance* test;
+
+
 	
 	
 };
